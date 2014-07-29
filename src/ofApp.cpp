@@ -27,6 +27,7 @@ void ofApp::setup(){
     pixelStripBoxFull.allocate(videoWidth, videoHeight, 3);
     lerpFull.allocate(pixelStripBoxFull);
     circlePixels.allocate((int)(1.802 * 3.142 * horizonRadius), 1, 3);
+    circleLine.allocate(circlePixels);
     
     subDivisionSize = 10;
     
@@ -138,6 +139,7 @@ void ofApp::update(){
         }
        
         circleMidpoint_get(videoWidth/2-70, videoHeight/2-50, horizonRadius, ofColor::mediumAquaMarine);
+        circleLine.loadData(circlePixels);
         circleMidpoint(videoWidth/2-70, videoHeight/2-50, horizonRadius, ofColor::mediumAquaMarine);
         
         circleSimple(videoWidth/2, videoHeight/2, 100, ofColor::magenta);
@@ -189,6 +191,7 @@ void ofApp::draw(){
 	ofSetHexColor(0xffffff);
     //lerpFull.drawSubsection(0, 0, videoWidth, videoHeight, 0, 0);
     lerpFull.draw(0, 0);
+    circleLine.draw(360, 5);
     
 	// then draw the contours:
     

@@ -56,6 +56,7 @@ public:
 
 
     ofTexture               lerpFull;
+    ofTexture               circleLine;
 
     ofColor colorOutput;
   
