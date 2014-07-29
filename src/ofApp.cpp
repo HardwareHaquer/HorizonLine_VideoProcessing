@@ -137,7 +137,9 @@ void ofApp::update(){
             g+=subDivisionSize;
         }
        
+        circleMidpoint_get(videoWidth/2-70, videoHeight/2-50, horizonRadius, ofColor::mediumAquaMarine);
         circleMidpoint(videoWidth/2-70, videoHeight/2-50, horizonRadius, ofColor::mediumAquaMarine);
+        
         circleSimple(videoWidth/2, videoHeight/2, 100, ofColor::magenta);
        //fillColorArray(videoWidth, videoHeight , subDivisionSize, pixelStripBoxFull, LEDColorBuffer);
         lerpFull.loadData(pixelStripBoxFull);
@@ -370,4 +372,60 @@ void ofApp::circleSimple(int xCenter, int yCenter, int radius, ofColor c)
         pixelStripBoxFull.setColor(xCenter + x, yCenter + y, c);
         pixelStripBoxFull.setColor(xCenter + x, yCenter - y, c);
     }
+}
+void ofApp::circlePoints_get(int cx, int cy, int x, int y, ofColor pix)
+{
+    // int act = Color.red.getRGB();
+    
+    if (x == 0) {
+        circlePixels.setColor(0, 0, pixelStripBoxFull.getColor(cx, cy +y));
+        circlePixels.setColor(circlePixels.size()/4, 0, pixelStripBoxFull.getColor(cx, cy - y));
+        circlePixels.setColor(circlePixels.size()/2, 0, pixelStripBoxFull.getColor(cx + y, cy));
+        circlePixels.setColor(3*circlePixels.size()/4, 0, pixelStripBoxFull.getColor(cx - y, cy));
+        xEquals0+=4;
+    } else
+        if (x == y) {
+            circlePixels.setColor(x, 0, pixelStripBoxFull.getColor(cx + x, cy + y));
+            circlePixels.setColor(circlePixels.size()/4 + x, 0, pixelStripBoxFull.getColor(cx - x, cy + y));
+            circlePixels.setColor(3*circlePixels.size()/4+x, 0, pixelStripBoxFull.getColor(cx + x, cy - y));
+            circlePixels.setColor(circlePixels.size()/2 + x, 0, pixelStripBoxFull.getColor(cx - x, cy - y));
+            xEqualsY+=4;
+        } else
+            if (x < y) {
+                circlePixels.setColor(x, 0, pixelStripBoxFull.getColor(cx + x, cy + y));
+                circlePixels.setColor(circlePixels.size()/4 + x, 0, pixelStripBoxFull.getColor(cx - x, cy + y));
+                circlePixels.setColor(3*circlePixels.size()/4 + x, 0, pixelStripBoxFull.getColor(cx + x, cy - y));
+                circlePixels.setColor(circlePixels.size()/2+x, 0, pixelStripBoxFull.getColor(cx - x, cy - y));
+                circlePixels.setColor(x, 0, pixelStripBoxFull.getColor(cx + y, cy + x));
+                circlePixels.setColor(3*circlePixels.size()/4 + x, 0, pixelStripBoxFull.getColor(cx - y, cy + x));
+                circlePixels.setColor(circlePixels.size()/4 + x, 0, pixelStripBoxFull.getColor(cx + y, cy - x));
+                circlePixels.setColor(circlePixels.size()/2+x, 0, pixelStripBoxFull.getColor(cx - y, cy - x));
+                xLessThanY+=8;
+            }
+}
+
+void ofApp::circleMidpoint_get(int xCenter, int yCenter, int radius, ofColor pix)
+{
+    
+    int x = 0;
+    int y = radius;
+    int p = (5 - radius*4)/4;
+    
+    circlePoints_get(xCenter, yCenter, x, y, pix);
+    while (x < y) {
+        x++;
+        if (p < 0) {
+            p += 2*x+1;
+        } else {
+            y--;
+            p += 2*(x-y)+1;
+        }
+        circlePoints_get(xCenter, yCenter, x, y, pix);
+    }
+    cout << "TotalPoints: " << xEquals0 + xEqualsY + xLessThanY << endl;
+    cout << "Horizon Radius attempt: " << (int)(1.802 * 3.142 * horizonRadius) << endl;
+    
+    xLessThanY = 0;
+    xEqualsY = 0;
+    xEquals0 = 0;
 }

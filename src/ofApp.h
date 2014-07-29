@@ -38,6 +38,10 @@ public:
     void fillColorArray(int vidWidth, int vidHeight, int subSize, ofPixels &pixels, int colorBuffer[][3]);
     void circleMidpoint(int xCenter, int yCenter, int radius, ofColor c);
     void circlePoints(int cx, int cy, int x, int y, ofColor pix);
+    
+    void circleMidpoint_get(int xCenter, int yCenter, int radius, ofColor c);
+    void circlePoints_get(int cx, int cy, int x, int y, ofColor pix);
+
     void circleSimple(int xCenter, int yCenter, int radius, ofColor c);
     
 #ifdef _USE_LIVE_VIDEO
