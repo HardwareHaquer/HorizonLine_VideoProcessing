@@ -41,6 +41,7 @@ public:
     
     void circleMidpoint_get(int xCenter, int yCenter, int radius, ofColor c);
     void circlePoints_get(int cx, int cy, int x, int y, ofColor pix);
+    void circlePoints_get_width(int cx, int cy, int x, int y, ofColor pix);
 
     void circleSimple(int xCenter, int yCenter, int radius, ofColor c);
     
@@ -53,6 +54,7 @@ public:
  
     ofPixels                pixelStripBoxFull;
     ofPixels                circlePixels;
+    ofPixels                serialPixels;
 
 
     ofTexture               lerpFull;
@@ -75,7 +77,7 @@ public:
     int                 xEqualsY = 0;
     int                 xLessThanY = 0;
     int                 horizonRadius = 210;
-
+    
     
     
     
