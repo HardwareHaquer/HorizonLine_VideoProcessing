@@ -29,6 +29,7 @@ void ofApp::setup(){
     circlePixels.allocate((int)(1.802 * 3.142 * horizonRadius), 5, 3);
     circleLine.allocate(circlePixels);
     
+    
     subDivisionSize = 10;
     
     
@@ -385,7 +386,7 @@ void ofApp::circlePoints_get(int cx, int cy, int x, int y, ofColor pix)
     // int act = Color.red.getRGB();
     
     if (x == 0) {
-        for (int yDim = 0; yDim <circlePixels.getHeight(); yDim++) {
+        for (int yDim = 0; yDim <circlePixels.getHeight()-1; yDim++) {
         circlePixels.setColor(0, yDim, pixelStripBoxFull.getColor(cx, cy +y));
         circlePixels.setColor((circlePixels.size()/4)/3, yDim, pixelStripBoxFull.getColor(cx, cy - y));
         circlePixels.setColor((circlePixels.size()/2)/3, yDim, pixelStripBoxFull.getColor(cx + y, cy));
@@ -394,7 +395,7 @@ void ofApp::circlePoints_get(int cx, int cy, int x, int y, ofColor pix)
         xEquals0+=4;
     } else
         if (x == y) {
-            for (int yDim = 0; yDim <circlePixels.getHeight(); yDim++) {
+            for (int yDim = 0; yDim <circlePixels.getHeight()-1; yDim++) {
             circlePixels.setColor(x, yDim, pixelStripBoxFull.getColor(cx + x, cy + y));
             circlePixels.setColor((circlePixels.size()/4)/3 + x, yDim, pixelStripBoxFull.getColor(cx - x, cy + y));
             circlePixels.setColor(circlePixels.size()/4+x, yDim, pixelStripBoxFull.getColor(cx + x, cy - y));
@@ -403,16 +404,16 @@ void ofApp::circlePoints_get(int cx, int cy, int x, int y, ofColor pix)
             xEqualsY+=4;
         } else
             if (x < y) {
-                for (int yDim = 0; yDim <circlePixels.getHeight(); yDim++) {
+                for (int yDim = 0; yDim <circlePixels.getHeight()-1; yDim++) {
                 
                 circlePixels.setColor(x, yDim, pixelStripBoxFull.getColor(cx + x, cy + y));
                 circlePixels.setColor((circlePixels.size()/4)/3 + x, yDim, pixelStripBoxFull.getColor(cx - x, cy + y));
                 circlePixels.setColor(circlePixels.size()/4 + x, yDim, pixelStripBoxFull.getColor(cx + x, cy - y));
                 circlePixels.setColor((circlePixels.size()/2)/3 + x, yDim, pixelStripBoxFull.getColor(cx - x, cy - y));
-                circlePixels.setColor(x+148, yDim, pixelStripBoxFull.getColor(cx + y, cy + x));
-                circlePixels.setColor(circlePixels.size()/4 + x + 148, yDim, pixelStripBoxFull.getColor(cx - y, cy + x));
-                circlePixels.setColor((circlePixels.size()/4)/3 + x + 148, yDim, pixelStripBoxFull.getColor(cx + y, cy - x));
-                circlePixels.setColor((circlePixels.size()/2)/3 + x + 148, yDim, pixelStripBoxFull.getColor(cx - y, cy - x));
+                circlePixels.setColor((297 - x), yDim, pixelStripBoxFull.getColor(cx + y, cy + x));
+                circlePixels.setColor(circlePixels.size()/4 + (297 - x) , yDim, pixelStripBoxFull.getColor(cx - y, cy + x));
+                circlePixels.setColor((circlePixels.size()/4)/3 + (297 - x), yDim, pixelStripBoxFull.getColor(cx + y, cy - x));
+                circlePixels.setColor((circlePixels.size()/2)/3 + (297 - x), yDim, pixelStripBoxFull.getColor(cx - y, cy - x));
                 }
                 xLessThanY+=8;
             }
