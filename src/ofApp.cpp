@@ -15,7 +15,8 @@ void ofApp::setup(){
         }else{
             cout << " - unavailable " << endl;
         }
-	}vidGrabber.setDeviceID(0);
+	}
+    vidGrabber.setDeviceID(1);
     vidGrabber.initGrabber(videoWidth,videoHeight);
     
 #else
@@ -143,13 +144,19 @@ void ofApp::update(){
         circleMidpoint_get(videoWidth/2-70, videoHeight/2-50, horizonRadius, ofColor::mediumAquaMarine);
         circleLine.loadData(circlePixels);
         circleMidpoint(videoWidth/2-70, videoHeight/2-50, horizonRadius, ofColor::mediumAquaMarine);
-        for (int t=0; t < circlePixels.size()/5; t++) {
-            serialPixels[t] = circlePixels[t]*127/255;
-        }
+//        for (int t=0; t < circlePixels.size()/5; t++) {
+//            serialPixels[t] = circlePixels[t]*127/255;
+//        }
         circleSimple(videoWidth/2, videoHeight/2, 100, ofColor::magenta);
        //fillColorArray(videoWidth, videoHeight , subDivisionSize, pixelStripBoxFull, LEDColorBuffer);
         lerpFull.loadData(pixelStripBoxFull);
-      
+        
+        for(int cir = 0; cir < serialPixels.getWidth(); cir++){
+            
+            serialPixels.setColor(cir, 0, circlePixels.getColor(cir*circlePixels.getWidth()/serialPixels.getWidth(), 0));
+        }
+
+        
         colorOutput = pixelStripBoxFull.getColor(subDivisionSize/2, videoHeight - subDivisionSize/2);
         int temp_index = 0; //top edge of video
         for(float x = subDivisionSize/2; x < videoWidth; x+=subDivisionSize){
@@ -217,6 +224,12 @@ void ofApp::draw(){
 	ofDrawBitmapString(reportStr.str(), 20, 600);
     for(int tot = subDivisionSize/2; tot < videoHeight; tot+=subDivisionSize){
         ofCircle(subDivisionSize/2, tot, 1);
+    }
+    for(int cir = 0; cir < 160; cir++){
+        
+        ofSetColor(serialPixels.getColor(cir, 0));
+        
+        ofCircle(cir*videoWidth/160, 600, 4);
     }
     for(int cir = 0; cir < 160; cir++){
         
@@ -487,7 +500,7 @@ void ofApp::circleMidpoint_get(int xCenter, int yCenter, int radius, ofColor pix
       //  cout << "x: " << x << " y: " << y << endl;
 
     }
-    cout << "x: " << x << " y: " << y << endl;
+    //cout << "x: " << x << " y: " << y << endl;
     
 
 //    cout << "Horizon Radius attempt: " << (int)(1.802 * 3.142 * horizonRadius) << endl;
