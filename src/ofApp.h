@@ -78,7 +78,22 @@ public:
     int                 xLessThanY = 0;
     int                 horizonRadius = 210;
     
+    //Serial
     
+    bool        firstContact;
+    bool		bSendSerialMessage;			// a flag for sending serial
+    char		bytesRead[3];				// data from serial, we will be trying to read 3
+    char		bytesReadString[4];			// a string needs a null terminator, so we need 3 + 1 bytes
+    int			nBytesRead;					// how much did we read?
+    int			nTimesRead;					// how many times did we read?
+    float		readTime;					// when did we last read?
+    long long       frameRateForCapture;
+    long long       lastTime;
+    unsigned char tempByte = 0;
+    unsigned char inBuff[3];
+    int             serialAvail = -1;
+    
+    ofSerial	serial;
     
     
     

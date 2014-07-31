@@ -3,6 +3,33 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
+    ofSetLogLevel(OF_LOG_VERBOSE);
+ 
+//SERIAL---------------------------------------------------------------
+    firstContact = false;
+	bSendSerialMessage = false;
+    
+    serial.listDevices();
+	vector <ofSerialDeviceInfo> deviceList = serial.getDeviceList();
+	
+	// this should be set to whatever com port your serial device is connected to.
+	// (ie, COM4 on a pc, /dev/tty.... on linux, /dev/tty... on a mac)
+	// arduino users check in arduino app....
+	int baud = 9600;
+	serial.setup(0, baud); //open the first device
+	//serial.setup("COM4", baud); // windows example
+	//serial.setup("/dev/tty.usbserial-A4001JEC", baud); // mac osx example
+	//serial.setup("/dev/ttyUSB0", baud); //linux example
+	
+	nTimesRead = 0;
+	nBytesRead = 0;
+	readTime = 0;
+    
+    lastTime = ofGetElapsedTimeMillis();
+    frameRateForCapture = 2.0;
+
+//VIDEO------------------------------------------------------------------
+    
 #ifdef _USE_LIVE_VIDEO
     vidGrabber.setVerbose(true);
     //we can now get back a list of devices.
@@ -61,6 +88,28 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 	ofBackground(100,100,100);
+    
+    unsigned char serialBuffer[480];
+    
+    for (int i=0; i<sizeof(serialBuffer); i+=3) {
+        serialBuffer[i] = 'f';
+        serialBuffer[i+1] = 'u';
+        serialBuffer[i+2] = 'k';
+    }
+
+    if (serial.available()>0) {
+        tempByte = serial.readByte();
+        cout << "from arduino:" << tempByte << endl;
+        if (firstContact == false) {
+            if (tempByte == 'A') {
+                serial.flush();          // clear the serial port buffer
+                firstContact = true;     // you've had first contact from the microcontroller
+                serial.writeByte('A');       // ask for more
+            }
+        }
+        //        //serial.flush(true, false);
+        //        serial.writeBytes(&serialBuffer[0], sizeof(serialBuffer));
+    }
     
     bool bNewFrame = false;
     
@@ -143,7 +192,8 @@ void ofApp::update(){
        
         circleMidpoint_get(videoWidth/2-70, videoHeight/2-50, horizonRadius, ofColor::mediumAquaMarine);
         circleLine.loadData(circlePixels);
-        circleMidpoint(videoWidth/2-70, videoHeight/2-50, horizonRadius, ofColor::mediumAquaMarine);
+        circleMidpoint(videoWidth/2-70, videoHeight/2-50, horizonRadius, ofColor::floralWhite);
+        
 //        for (int t=0; t < circlePixels.size()/5; t++) {
 //            serialPixels[t] = circlePixels[t]*127/255;
 //        }
@@ -155,43 +205,19 @@ void ofApp::update(){
             
             serialPixels.setColor(cir, 0, circlePixels.getColor(cir*circlePixels.getWidth()/serialPixels.getWidth(), 0));
         }
+       
+        long long timePerFrame = 2000;
+        long long currentTime = ofGetElapsedTimeMillis() ;
+        if(currentTime - lastTime > timePerFrame){
+            serial.writeBytes(&serialBuffer[0], sizeof(serialBuffer));
+            lastTime = currentTime;
+        }
 
         
-        colorOutput = pixelStripBoxFull.getColor(subDivisionSize/2, videoHeight - subDivisionSize/2);
-        int temp_index = 0; //top edge of video
-        for(float x = subDivisionSize/2; x < videoWidth; x+=subDivisionSize){
-            ofColor ColorOut = pixelStripBoxFull.getColor((int)x,0);
-            LEDColorBuffer[temp_index][0] = (int)ColorOut.r;
-            LEDColorBuffer[temp_index][1] = (int)ColorOut.g;
-            LEDColorBuffer[temp_index][2] = (int)ColorOut.b;
-            temp_index++;
-        }
-        //right edge
-        for(float y = subDivisionSize/2; y < videoHeight; y+=subDivisionSize){
-            ofColor ColorOut = pixelStripBoxFull.getColor(videoWidth,(int)y);
-            LEDColorBuffer[temp_index][0] = (int)ColorOut.r;
-            LEDColorBuffer[temp_index][1] = (int)ColorOut.g;
-            LEDColorBuffer[temp_index][2] = (int)ColorOut.b;
-            temp_index++;
-        }
-        //bottom edge
-        for(float x = videoWidth - subDivisionSize/2; x > 0; x-=subDivisionSize){
-            ofColor ColorOut = pixelStripBoxFull.getColor((int)x,videoHeight);
-            LEDColorBuffer[temp_index][0] = (int)ColorOut.r;
-            LEDColorBuffer[temp_index][1] = (int)ColorOut.g;
-            LEDColorBuffer[temp_index][2] = (int)ColorOut.b;
-            temp_index++;
-        }
-        //left edge
-        for(float y = videoHeight - subDivisionSize/2; y > 0; y-=subDivisionSize){
-            ofColor ColorOut = pixelStripBoxFull.getColor(0,(int)y);
-            LEDColorBuffer[temp_index][0] = (int)ColorOut.r;
-            LEDColorBuffer[temp_index][1] = (int)ColorOut.g;
-            LEDColorBuffer[temp_index][2] = (int)ColorOut.b;
-            temp_index++;
-        }
-        bigIndex = temp_index;
+        
 	}
+    
+    
   }
 
 //--------------------------------------------------------------
@@ -234,7 +260,7 @@ void ofApp::draw(){
     for(int cir = 0; cir < 160; cir++){
         
         ofSetColor(circlePixels.getColor(cir*circlePixels.getWidth()/160, 0));
-        serialPixels.setColor(cir, 0, circlePixels.getColor(cir*circlePixels.getWidth()/160, 0));
+       // serialPixels.setColor(cir, 0, circlePixels.getColor(cir*circlePixels.getWidth()/160, 0));
         ofCircle(cir*videoWidth/160, 700, 4);
     }
 }
