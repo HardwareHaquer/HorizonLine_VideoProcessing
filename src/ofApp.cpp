@@ -15,7 +15,7 @@ void ofApp::setup(){
         }else{
             cout << " - unavailable " << endl;
         }
-	}vidGrabber.setDeviceID(1);
+	}vidGrabber.setDeviceID(0);
     vidGrabber.initGrabber(videoWidth,videoHeight);
     
 #else
@@ -28,7 +28,7 @@ void ofApp::setup(){
     lerpFull.allocate(pixelStripBoxFull);
     circlePixels.allocate((int)(1.802 * 3.142 * horizonRadius), 5, 3);
     circleLine.allocate(circlePixels);
-    serialPixels.allocate((int)(1.802 * 3.142 * horizonRadius), 1, 3);
+    serialPixels.allocate(160, 1, 3);
     
     
     subDivisionSize = 10;
@@ -185,8 +185,7 @@ void ofApp::update(){
         }
         bigIndex = temp_index;
 	}
-
-}
+  }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -222,6 +221,7 @@ void ofApp::draw(){
     for(int cir = 0; cir < 160; cir++){
         
         ofSetColor(circlePixels.getColor(cir*circlePixels.getWidth()/160, 0));
+        serialPixels.setColor(cir, 0, circlePixels.getColor(cir*circlePixels.getWidth()/160, 0));
         ofCircle(cir*videoWidth/160, 700, 4);
     }
 }
