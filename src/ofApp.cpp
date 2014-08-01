@@ -15,7 +15,7 @@ void ofApp::setup(){
 	// this should be set to whatever com port your serial device is connected to.
 	// (ie, COM4 on a pc, /dev/tty.... on linux, /dev/tty... on a mac)
 	// arduino users check in arduino app....
-	int baud = 9600;
+	int baud = 115200;
 	serial.setup(0, baud); //open the first device
 	//serial.setup("COM4", baud); // windows example
 	//serial.setup("/dev/tty.usbserial-A4001JEC", baud); // mac osx example
@@ -43,7 +43,7 @@ void ofApp::setup(){
             cout << " - unavailable " << endl;
         }
 	}
-    vidGrabber.setDeviceID(1);
+    vidGrabber.setDeviceID(0);
     vidGrabber.initGrabber(videoWidth,videoHeight);
     
 #else
@@ -205,15 +205,24 @@ void ofApp::update(){
             
             serialPixels.setColor(cir, 0, circlePixels.getColor(cir*circlePixels.getWidth()/serialPixels.getWidth(), 0));
         }
-       
-        long long timePerFrame = 2000;
+        
+        
+        outPixels.allocate(serialPixels.getWidth(), serialPixels.getHeight(), serialPixels.getNumChannels());
+        for (int out=0; out < outPixels.size(); out++) {
+            outPixels[out] = serialPixels[out]*127/255;
+        }
+        
+        
+        long long timePerFrame = 100;
         long long currentTime = ofGetElapsedTimeMillis() ;
         if(currentTime - lastTime > timePerFrame){
-            serial.writeBytes(&serialBuffer[0], sizeof(serialBuffer));
+            serial.writeBytes(&outPixels[0], outPixels.size());
             lastTime = currentTime;
         }
 
-        
+//        for(int s = 0; s<outPixels.size(); s+=3){
+//            cout << (int)s/3 << ": ("<< "r: " << (int)outPixels[s] << "g: " << (int)outPixels[s+1] << "b: " << (int)outPixels[s+2] << ")" << endl;
+//        }
         
 	}
     
@@ -245,7 +254,7 @@ void ofApp::draw(){
     << "round 148.5 " << (int)(148.5) << " " << endl
     << "circle.size()/4 " <<  circlePixels.getColor((circlePixels.size()/4)/3-149, 0) <<endl
     << "circle size /2 " <<  circlePixels.getColor((circlePixels.size()/2)/3-149, 0) << " " << endl
-    << "3 circle /4" <<  circlePixels.getColor(circlePixels.size()/4-149, 0) << endl
+    << "sizeof serialPixels " <<  (int)outPixels.size() << endl
     << ", fps: " << ofGetFrameRate() <<endl;
 	ofDrawBitmapString(reportStr.str(), 20, 600);
     for(int tot = subDivisionSize/2; tot < videoHeight; tot+=subDivisionSize){
@@ -256,6 +265,12 @@ void ofApp::draw(){
         ofSetColor(serialPixels.getColor(cir, 0));
         
         ofCircle(cir*videoWidth/160, 600, 4);
+    }
+    for(int cir = 0; cir < 160; cir++){
+        
+        ofSetColor(outPixels.getColor(cir, 0));
+        
+        ofCircle(cir*videoWidth/160, 650, 4);
     }
     for(int cir = 0; cir < 160; cir++){
         
@@ -323,42 +338,6 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
     
 }
 
-void ofApp::fillColorArray(int vidWidth, int vidHeight, int subSize, ofPixels &pixels, int colorBuffer[][3]){
-    
-    int temp_index = 0; //top edge of video
-    for(int x = subSize/2; x < vidWidth; x+=subSize){
-        ofColor ColorOut = pixels.getColor(x,0);
-        colorBuffer[temp_index][0] = ColorOut.r;
-        colorBuffer[temp_index][1] = ColorOut.g;
-        colorBuffer[temp_index][2] = ColorOut.b;
-        temp_index++;
-    }
-    //right edge
-    for(int y = subSize/2; y < vidHeight; y+=subSize){
-        ofColor ColorOut = pixels.getColor(vidWidth,y);
-        colorBuffer[temp_index][0] = ColorOut.r;
-        colorBuffer[temp_index][1] = ColorOut.g;
-        colorBuffer[temp_index][2] = ColorOut.b;
-        temp_index++;
-    }
-    for(int x = vidWidth - subSize/2; x > 0; x-=subSize){
-        ofColor ColorOut = pixels.getColor(x,vidHeight);
-        colorBuffer[temp_index][0] = ColorOut.r;
-        colorBuffer[temp_index][1] = ColorOut.g;
-        colorBuffer[temp_index][2] = ColorOut.b;
-        temp_index++;
-    }
-    //left edge
-    for(int y = vidHeight - subSize/2; y > 0; y-=subSize){
-        ofColor ColorOut = pixels.getColor(0,y);
-        colorBuffer[temp_index][0] = ColorOut.r;
-        colorBuffer[temp_index][1] = ColorOut.g;
-        colorBuffer[temp_index][2] = ColorOut.b;
-        temp_index++;
-    }
-
-    
-}
 
 void ofApp::circlePoints(int cx, int cy, int x, int y, ofColor pix)
 {

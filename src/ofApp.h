@@ -35,7 +35,6 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    void fillColorArray(int vidWidth, int vidHeight, int subSize, ofPixels &pixels, int colorBuffer[][3]);
     void circleMidpoint(int xCenter, int yCenter, int radius, ofColor c);
     void circlePoints(int cx, int cy, int x, int y, ofColor pix);
     
@@ -55,6 +54,7 @@ public:
     ofPixels                pixelStripBoxFull;
     ofPixels                circlePixels;
     ofPixels                serialPixels;
+    ofPixels                outPixels;
 
 
     ofTexture               lerpFull;
